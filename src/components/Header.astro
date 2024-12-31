@@ -1,0 +1,40 @@
+---
+
+import Navigation from "~/components/Navigation.astro";
+import Container from "~/components/Container.astro";
+import MobileMenu from "~/components/AppDrawer";
+
+import { Image } from "astro:assets"
+
+const { data } = Astro.props;
+
+const mediaBaseUrl = import.meta.env.MEDIA_ENDPOINT;
+---
+
+<header
+  class="py-2 z-10"
+  class:list={[data?.customOptions?.classes?.header]}
+  style={data?.customOptions?.styles?.header}
+>
+  <Container class="flex items-center justify-between">
+
+    <Image src={mediaBaseUrl + data?.logo?.url} width={30} height={30} alt={data?.logo?.alt || "Company Logo"} loading="eager" />
+
+    <div class="flex item-center justify-end gap-8">
+      <Navigation navigation={data?.navigation} style={data?.customOptions?.styles?.navigation} />
+      <MobileMenu client:load>
+        <Container class="mt-8">
+          {data?.navigation?.menu?.map((item: any) => {
+            const itemSlug = item.link || '/' + item.page?.slug
+            return item.showInMobile && (
+              <a href={itemSlug} class="menu-link block text-sm hover:opacity-80 transition duration-200">
+                {item.label || item.page?.label}
+              </a>
+            )
+          })}
+          <!-- {JSON.stringify(data?.navigation, null, 2)} -->
+        </Container>
+      </MobileMenu>
+    </div>
+  </Container>
+</header>

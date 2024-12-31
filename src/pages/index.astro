@@ -1,0 +1,26 @@
+---
+import Layout from "~/layouts/Layout.astro";
+import { graphqlClient } from "~/lib/graphql-client";
+import { GetPageQuery } from "~/lib/queries";
+
+import Section from "~/components/Section.astro";
+
+const client = graphqlClient();
+let page = null;
+
+try {
+  const data = await client.request(GetPageQuery, { slug: "index" });
+  page = (data as { pages: any[] }).pages[0] || null;
+} catch (error) {
+  console.error("Error fetching data:", error);
+}
+---
+
+<Layout title={page?.seo?.title || page?.name} header={page?.header} footer={page?.footer}>
+  
+  {page?.sections?.map((section: any) => (
+    section.options.show && <Section section={section} />
+  ))}
+
+  <!-- <pre>{JSON.stringify(page.sections, null, 2)}</pre> -->
+</Layout>

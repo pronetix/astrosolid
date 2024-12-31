@@ -1,0 +1,15 @@
+---
+const { navigation, style: navigationStyle } = Astro.props
+const { pathname } = Astro.url
+---
+
+{navigation?.menu?.length && (<div class="hidden px-6 py-1 md:flex items-center justify-center gap-6 rounded-full" style={navigationStyle}>
+  {navigation?.menu.map((item: any) => {
+    const itemSlug = item.link || '/' + item.page?.slug
+    return item.showInDesktop && (
+      <a href={itemSlug} class="menu-link block text-sm hover:opacity-80 transition duration-200" class:list={pathname === itemSlug ? 'opacity-100' : 'opacity-60'}>
+        {item.label || item.page?.label}
+      </a>
+    )
+  })}
+</div>)}

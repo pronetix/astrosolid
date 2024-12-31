@@ -1,0 +1,19 @@
+---
+import Heading from "~/components/Heading";
+import Container from "~/components/Container.astro";
+
+const { textList, customOptions } = Astro.props;
+
+const ContainerComponent = customOptions?.container ? Container : 'div';
+const containerStyles = customOptions?.styles || {};
+const containerClasses = ['headline-wrapper', customOptions?.classes];
+
+---
+
+<ContainerComponent class:list={containerClasses} style={containerStyles}>
+  {textList?.map((item: any) => (
+    <Heading {...item}>{item.text}</Heading>
+   ))} 
+</ContainerComponent>
+
+<!-- <pre>{JSON.stringify(textList, null, 2)}</pre> -->

@@ -1,0 +1,29 @@
+---
+import '~/styles/globals.css'
+
+import Header from '~/components/Header.astro'
+import { ClientRouter } from 'astro:transitions';
+
+const { title = 'Default Title', header, footer } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap">
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<ClientRouter />
+	</head>
+	<body class="flex flex-col min-h-screen">
+		<div class="flex-1 bg-background">
+			<Header data={header} />
+			<main class="h-full">
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>

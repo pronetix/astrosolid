@@ -1,0 +1,39 @@
+---
+import dynamic from "astro:import";
+import { useMargin } from "~/composables/useMargin";
+
+const { section = null } = Astro.props;
+const marginClasses = useMargin(section?.options?.margin);
+
+const backgroundColor = section?.background?.color?.color || null;
+const backgroundImage = section?.background?.image?.image || null;
+const backgroundPosition = section?.background?.image?.position || null;
+const backgroundSize = section?.background?.image?.size || null;
+const backgroundRepeat = section?.background?.image?.repeat || null;
+
+const MEDIA_SERVER_ENDPOINT = import.meta.env.MEDIA_ENDPOINT;
+
+const components = await Promise.all(
+  (section?.blocks?.map(async (component: any) => {
+    try {
+      const Component = await dynamic(
+        `/components/${component.componentName?.name}`,
+      );
+      return { Component, props: component };
+    } catch (error) {
+      console.error(`Error loading component: ${component.componentName?.name}`, error);
+      return null;
+    }
+  })) || [],
+);
+---
+
+<section class={`${marginClasses}`} style={{ backgroundColor, backgroundImage: backgroundImage && `url(${MEDIA_SERVER_ENDPOINT}/uploads/${backgroundImage.hash}${backgroundImage.ext})`, backgroundPosition, backgroundSize, backgroundRepeat, ...section.options?.customOptions?.styles?.section }}>
+  { components && components.map(
+      (component: { Component: any; props: any }) => {
+        if (!component?.Component) return null;
+        return <component.Component {...component.props} />
+      }
+    )
+  }
+</section>

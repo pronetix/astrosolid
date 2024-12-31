@@ -1,0 +1,43 @@
+---
+import Layout from "~/layouts/Layout.astro";
+import { graphqlClient } from "~/lib/graphql-client";
+import { GetAllSlugsQuery, GetPageQuery } from "~/lib/queries";
+import Section from "~/components/Section.astro";
+
+export async function getStaticPaths() {
+  let paths: { params: { slug: string } }[] = [];
+  const client = graphqlClient();
+
+  try {
+    const data = await client.request(GetAllSlugsQuery, { slug: "" });
+    const pagesData = data as { pages: any[] };
+    paths = pagesData.pages
+      .filter((page: any) => page.slug !== "index") // Исключаем Index
+      .map((page: any) => ({ params: { slug: page.slug } }));
+  } catch (error) {
+    console.error("Error fetching paths:", error);
+  }
+  return paths;
+}
+
+let page = null;
+
+const { slug } = Astro.params;
+const client = graphqlClient();
+
+try {
+  const data = await client.request(GetPageQuery, { slug });
+  page = (data as { pages: any[] }).pages[0] || null;
+} catch (error) {
+  console.error("Error fetching data:", error);
+}
+---
+
+<Layout title={page?.seo?.title || page?.name} header={page?.header} footer={page?.footer}>
+  
+  {page?.sections?.map((section: any) => (
+    <Section section={section} />
+  ))}
+
+  <!-- <pre>{JSON.stringify(page.sections, null, 2)}</pre> -->
+</Layout>
